@@ -401,15 +401,18 @@ export default function CoursePlayer({ routeGeojson, waypoints, music, title, di
   const animActive = playing && !paused;
 
   return (
-    <div style={{ position: "relative", width: "100%", height: "70vh", borderRadius: 12, overflow: "hidden" }}>
-      <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
+    <div style={{ position: "relative", width: "100%", height: "70vh", borderRadius: 12 }}>
+      {/* Map container — overflow hidden only on the map itself */}
+      <div style={{ position: "absolute", inset: 0, borderRadius: 12, overflow: "hidden" }}>
+        <div ref={mapContainer} style={{ width: "100%", height: "100%" }} />
+      </div>
 
       {/* Hidden YouTube player */}
       {music && (
         <div id="yt-player-container" style={{ position: "absolute", top: -9999, left: -9999, width: 200, height: 112, opacity: 0, pointerEvents: "none" }} />
       )}
 
-      {/* Music mini player */}
+      {/* Music mini player — outside map's overflow:hidden container */}
       {playing && music && (
         <div style={{
           position: "absolute", top: 16, left: "50%", transform: "translateX(-50%)", zIndex: 30,
