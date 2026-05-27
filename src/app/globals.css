@@ -1,3 +1,190 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =======================================================
+   Routebook Design System Tokens — v1.0
+   Clean Road direction · 2026-05-26
+   SOT: docs/prd/design-direction-main.md §3
+   ======================================================= */
+:root {
+
+  /* ── 브랜드 컬러 ── */
+  --color-brand:          #ff385c;            /* Rausch Red — singular accent */
+  --color-brand-dark:     #e00b41;            /* Pressed / deep state */
+  --color-brand-subtle:   rgba(255,56,92,0.08); /* Active menu bg, hint areas */
+
+  /* ── 텍스트 컬러 ── */
+  --color-text-primary:   #222222;            /* Near-black (Airbnb warm) */
+  --color-text-secondary: #6a6a6a;            /* Body secondary, descriptions */
+  --color-text-tertiary:  #999999;            /* Tab inactive, disabled */
+  --color-text-inverse:   #ffffff;            /* On dark surfaces */
+  --color-text-label:     #6B7B8D;            /* Form labels */
+
+  /* ── 배경 / 서피스 ── */
+  --color-bg:             #ffffff;            /* Card, panel, dropdown */
+  --color-bg-subtle:      #F8F8F6;            /* Input bg, empty state, cream */
+  --color-bg-alt:         #F4F4F4;            /* App chrome, skeleton bg */
+  --color-bg-control:     #f2f2f2;            /* Circular nav button surface */
+  --color-bg-overlay:     rgba(0,0,0,0.3);   /* Modal scrim */
+
+  /* ── 보더 ── */
+  --color-border:         #E0E0E0;            /* Standard dividers */
+  --color-border-strong:  #C2C2C2;            /* Emphasized borders */
+  --color-border-subtle:  #f1f5f9;            /* Hairline dividers */
+
+  /* ── 시맨틱 상태 ── */
+  --color-success:        #10b981;            /* "출발" endpoint, URL 유효 */
+  --color-danger:         #e03e3e;            /* Error text, cancel action */
+  --color-info:           #428bff;            /* GPS icon, 링크 — CTA 불가 */
+
+  /* ── 그림자 ── */
+  /* Airbnb 3-layer warm shadow — 모든 elevated surface의 SOT */
+  --shadow-card:
+    rgba(0,0,0,0.02) 0px 0px 0px 1px,
+    rgba(0,0,0,0.04) 0px 2px 6px,
+    rgba(0,0,0,0.1)  0px 4px 8px;
+  /* 호버 / 버튼 lift */
+  --shadow-hover:         rgba(0,0,0,0.08) 0px 4px 12px;
+  /* 포커스 링 */
+  --shadow-focus:         0 0 0 2px rgba(255,56,92,0.3);
+  /* Float 카드 (선택된 코스 카드 등) */
+  --shadow-float:         rgba(0,0,0,0.02) 0px 0px 0px 1px, rgba(0,0,0,0.08) 0px 4px 16px;
+  /* 바텀 시트 상단 */
+  --shadow-panel-top:     0 -2px 12px rgba(0,0,0,0.1);
+  /* 원형 FAB */
+  --shadow-control:       0 2px 8px rgba(0,0,0,0.12);
+
+  /* ── 반경 ── */
+  --radius-xs:    4px;      /* 작은 링크, 드래그 핸들 */
+  --radius-sm:    8px;      /* 버튼, 입력, 배지 pill */
+  --radius-md:    12px;     /* 패널, 카드, 검색바, 드롭다운 */
+  --radius-lg:    16px;     /* 코스 카드, 바텀 시트 단차 */
+  --radius-xl:    20px;     /* 바텀 시트 상단 모서리 */
+  --radius-full:  9999px;   /* pill 태그 (완전 원형) */
+  --radius-circle: 50%;     /* 원형 FAB, 아바타 */
+
+  /* ── 타이포그래피 ── */
+  --font-display: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-body:    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+
+  /* size / line-height 쌍 */
+  --text-nano:  10px;   /* lh: 1.3 */
+  --text-micro: 11px;   /* lh: 1.3 */
+  --text-xs:    12px;   /* lh: 1.4 */
+  --text-sm:    13px;   /* lh: 1.5 */
+  --text-md:    14px;   /* lh: 1.43 */
+  --text-lg:    15px;   /* lh: 1.4 */
+  --text-xl:    16px;   /* lh: 1.25 */
+  --text-2xl:   20px;   /* lh: 1.3 */
+  --text-3xl:   24px;   /* lh: 1.2 */
+
+  /* weight */
+  --weight-regular:   400;
+  --weight-medium:    500;
+  --weight-semibold:  600;
+  --weight-bold:      700;
+
+  /* ── 스페이싱 (4px base) ── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+
+  /* ── 모션 ── */
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration-fast:   150ms;
+  --duration-normal: 300ms;
+  --duration-slow:   500ms;
+
+  /* ── 지도 오버레이 고정 치수 ── */
+  --fab-size:       42px;   /* 원형 FAB 기본 사이즈 */
+  --bottom-tab-h:   60px;   /* BottomTab 높이 */
+  --top-bar-h:      60px;   /* 상단 컨트롤 영역 기준 */
+}
+
+/* dvh fallback for older browsers */
+@supports not (height: 100dvh) {
+  :root { --dvh: 1vh; }
+}
+
+/* Hide scrollbar */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* Skeleton pulse animation */
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Mapbox compass */
+.mapboxgl-ctrl-top-right {
+  top: 60px !important;
+  right: 12px !important;
+}
+
+.mapboxgl-ctrl-group {
+  background: var(--color-bg) !important;
+  border-radius: 50% !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12) !important;
+  width: 42px !important;
+  height: 42px !important;
+  overflow: hidden !important;
+}
+
+.mapboxgl-ctrl-group button {
+  width: 42px !important;
+  height: 42px !important;
+  border: none !important;
+  background: transparent !important;
+}
+
+.mapboxgl-ctrl-group button .mapboxgl-ctrl-icon {
+  filter: contrast(0.6) !important;
+}
+
+/* Spinner animation */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* CourseCard popup slide-up / slide-down */
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+@keyframes slideDown {
+  from { transform: translateY(0);    opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+
+/* D2 — hide BottomTab during create mode */
+body.create-mode-active .bottom-tab {
+  display: none !important;
+}
+
+/* Pin floating animation */
+@keyframes pinFloat {
+  0%, 100% {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  }
+  50% {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 14px rgba(0,0,0,0.22);
+  }
+}
+
+.pin-floating {
+  animation: pinFloat 2s ease-in-out infinite;
+  z-index: 5;
+}

@@ -1,11 +1,5 @@
-import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 
-const Map = dynamic(() => import("@/components/Map"), { ssr: false });
-
-export default function Home() {
-  return (
-    <main>
-      <Map />
-    </main>
-  );
+export default function RootPage() {
+  redirect("/map");
 }
