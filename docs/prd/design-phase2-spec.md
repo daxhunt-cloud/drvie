@@ -13,7 +13,7 @@ Phase 3 티켓 작성 시 각 섹션이 Acceptance Criteria(AC)의 SOT가 된다
 | 섹션 | 컴포넌트 | 파일 | 티켓 |
 |---|---|---|---|
 | §1 | CourseCard | `src/components/CourseCard.tsx` (신규) | T-IA-04 + T-DS-03 병합 |
-| §2 | BottomTab (3-탭) | `src/components/BottomTab.tsx` (수정) | T-IA-01 |
+| §2 | BottomTab (2-탭) | `src/components/BottomTab.tsx` (수정) | T-IA-01 |
 | §3 | FeedSortToggle | `src/components/FeedSortToggle.tsx` (신규) | T-IA-03 |
 | §4 | MapTopBar 카테고리 칩 | `src/components/Map.tsx` 내부 (수정) | T-DS-04 |
 | §5 | SelectedCourseCard | CourseCard `variant="popup"` (§1 동일 컴포넌트) | T-DS-05 |
@@ -237,7 +237,9 @@ CTA 버튼:         aria-label="{title} 코스 자세히 보기"
 
 ---
 
-## 2. BottomTab (3-탭) 컴포넌트 명세
+## 2. BottomTab (2-탭) 컴포넌트 명세 (지도/피드)
+
+> ⚠️ **SHIPPED DEVIATION**: 설정 탭 BottomTab 제거됨. `/settings` 진입점 = `/map` 헤더 햄버거 메뉴 "⚙️ 설정".
 
 ### 2.1 파일 + 변경 범위
 파일: `src/components/BottomTab.tsx` (수정)
@@ -248,9 +250,9 @@ CTA 버튼:         aria-label="{title} 코스 자세히 보기"
 ```typescript
 const TABS = [
   { label: "지도",  path: "/map",      icon: MapIcon },
-  { label: "피드",  path: "/feed",     icon: CompassIcon },   // 신규 추가 (중간 위치)
-  { label: "설정",  path: "/settings", icon: GearIcon },
+  { label: "피드",  path: "/feed",     icon: CompassIcon },   // 신규 추가 (설정 대체)
 ]
+// 설정(/settings) 진입점: /map 헤더 메뉴로 이전
 ```
 
 ### 2.3 Compass 아이콘 (피드 탭) SVG
@@ -294,7 +296,7 @@ const CompassIcon = (active: boolean) => (
 const isActive = (path: string) => {
   if (pathname.startsWith("/course")) return false;
   if (path === "/map") return pathname === "/map" || pathname.startsWith("/map/");
-  return pathname.startsWith(path);  // /feed ✓, /settings ✓ 모두 처리
+  return pathname.startsWith(path);  // /feed ✓
 };
 ```
 
@@ -318,12 +320,12 @@ transition: color 150ms var(--ease-out);
 ### 3.2 Props
 
 ```typescript
-type FeedSortMode = "popular" | "new" | "following" | "region";
+type FeedSortMode = "popular" | "new" | "liked" | "mine";
 
 interface FeedSortToggleProps {
   active: FeedSortMode;
   onSelect: (mode: FeedSortMode) => void;
-  isLoggedIn: boolean;     // 팔로잉 탭 LoginModal 트리거용
+  isLoggedIn: boolean;     // 관심·내 코스 탭 LoginModal 트리거용
 }
 ```
 
@@ -331,12 +333,14 @@ interface FeedSortToggleProps {
 
 ```typescript
 const SORT_TABS = [
-  { key: "popular",   label: "인기"    },
-  { key: "new",       label: "신규"    },
-  { key: "following", label: "팔로잉"  },
-  { key: "region",    label: "내지역"  },
+  { key: "popular", label: "인기"    },
+  { key: "new",     label: "신규"    },
+  { key: "liked",   label: "관심"    },   // 내가 좋아요한 코스 (Auth 필수)
+  { key: "mine",    label: "내 코스" },   // 내가 만든 코스 (Auth 필수)
 ]
 ```
+
+> **URL backward-compat**: `?sort=following` → `liked`, `?sort=region` → `mine` 자동 마이그레이션 (feed/page.tsx에서 처리).
 
 ### 3.4 컨테이너 스타일
 
@@ -380,10 +384,10 @@ background:    var(--color-brand);         /* #ff385c */
 border-color:  var(--color-brand);
 ```
 
-### 3.6 팔로잉 탭 비로그인 처리
+### 3.6 관심·내 코스 탭 비로그인 처리
 
 - 탭은 항상 표시 (dimmed 처리 없음 — 발견/로그인 유도)
-- 비로그인 상태에서 "팔로잉" 탭 클릭 시:
+- 비로그인 상태에서 "관심" 또는 "내 코스" 탭 클릭 시:
   - 탭 이동 없이 `LoginModal` 트리거
   - 정렬 상태(`active`) 변경 없음
 
@@ -617,6 +621,8 @@ T-DS-01 (globals.css 토큰)    ← 전제조건
 | OG 이미지 동적 생성 | `/icon-512.png` 유지 — 코스 썸네일 기반 동적 OG는 이후 |
 | `/feed` 검색 바 | IA 결정 — 장소 검색은 `/map` 전용 |
 | 스와이프 다운 dismiss (popup) | Phase 3 이후 개선 |
+| 팔로잉 정렬 (bookmarks JOIN) | V3 deferred — v2에서 관심(liked) 개인 목록으로 대체 |
+| 내지역 정렬 (위치 기반) | V3 deferred — v2에서 내 코스(mine) 개인 목록으로 대체 |
 
 ---
 
@@ -626,9 +632,24 @@ PO / 사용자 확인이 필요한 2개 사항. 답변 전 Phase 3 T-IA-05(무�
 
 ---
 
-### Q1. `/feed` 내지역 탭 — 위치 정밀도 구현 방식
+### Q1. `/feed` 내지역·팔로잉 탭 — V3 구현 방식 (v2 deferred)
 
-"내지역" 정렬 시 현재 사용 가능한 두 방식:
+> ⚠️ **v2 shipping deviation**: v2에서 `following`(팔로잉)과 `region`(내지역) 탭은 구현하지 않았음. 대신 `liked`(관심 — 내가 좋아요한 코스)와 `mine`(내 코스 — 내가 만든 코스) 개인화 탭으로 대체하여 배포함. URL backward-compat: `?sort=following` → `liked`, `?sort=region` → `mine`.
+>
+> V3에서 팔로잉·내지역을 추가할 경우 아래 방식 중 선택:
+
+**팔로잉 탭 (V3-VAL-03):**
+```typescript
+// bookmarks!inner JOIN — 내가 찜한 사람들의 공개 코스
+supabase.from("courses")
+  .select(`..., bookmarks!inner(user_id)`)
+  .eq("bookmarks.user_id", userId)
+  .eq("visibility", "public")
+  .order("created_at", { ascending: false })
+  .range(from, to)
+```
+
+**내지역 탭 (V3-VAL-04) — 위치 정밀도 구현 방식:**
 
 | | Option A — 역지오코딩 | Option B — 거리 계산 |
 |---|---|---|
@@ -638,8 +659,6 @@ PO / 사용자 확인이 필요한 2개 사항. 답변 전 Phase 3 T-IA-05(무�
 | 구현 비용 | S | M |
 
 **Designer 권고**: Option A (빠른 구현, 기존 인프라 재활용). 트래픽 증가 시 Option B 전환.
-
-> **확인 필요**: "내지역 탭 구현 방식 — 빠른 구현(Option A, 행정동 매칭) vs 정밀도(Option B, 좌표 거리)?"
 
 ---
 
@@ -663,4 +682,5 @@ PO / 사용자 확인이 필요한 2개 사항. 답변 전 Phase 3 T-IA-05(무�
 
 ## 스테일 노트 (decisions.md 후보)
 
-> 2026-05-26 · Phase 2 구현 명세 완료 · 5개 컴포넌트 (CourseCard/BottomTab/FeedSortToggle/MapTopBar/SelectedCourseCard) · AC 템플릿 확정 · Phase 3 진입 전 오픈 퀘스천 2개 (Q1 내지역 방식, Q2 썸네일 캐싱) PO 확인 대기
+> 2026-05-26 · Phase 2 구현 명세 완료 · 5개 컴포넌트 (CourseCard/BottomTab/FeedSortToggle/MapTopBar/SelectedCourseCard) · AC 템플릿 확정 · Phase 3 진입 전 오픈 퀘스천 2개 (Q1 내지역/팔로잉 방식, Q2 썸네일 캐싱) PO 확인 대기
+> 2026-05-27 · SHIPPED DEVIATION — BottomTab 2-탭 (설정 제거); FeedSortToggle liked/mine (팔로잉/내지역 V3 deferred)
