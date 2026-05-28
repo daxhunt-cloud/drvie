@@ -463,6 +463,49 @@ export default function Map() {
     }
   }, [selectedBrowseCourse]);
 
+  // fitBounds / easeTo — reframe viewport so selected route is visible above popup card
+  useEffect(() => {
+    if (!map.current) return;
+    if (selectedBrowseCourse) {
+      const coords: [number, number][] | undefined =
+        selectedBrowseCourse.route_geojson?.coordinates;
+      if (coords && coords.length >= 2) {
+        // Compute bounding box from route LineString coordinates
+        const bounds = coords.reduce(
+          (b: mapboxgl.LngLatBounds, c: [number, number]) => b.extend(c),
+          new mapboxgl.LngLatBounds(coords[0], coords[0])
+        );
+        map.current.fitBounds(bounds, {
+          padding: { top: 120, bottom: 331, left: 60, right: 60 },
+          duration: 300,
+          maxZoom: 14, // prevent over-zoom on very short routes
+        });
+      } else if (selectedBrowseCourse.waypoints?.[0]) {
+        // Fallback: no route geometry — just center on first waypoint
+        map.current.easeTo({
+          center: [
+            selectedBrowseCourse.waypoints[0].lng,
+            selectedBrowseCourse.waypoints[0].lat,
+          ],
+          padding: { top: 120, bottom: 331, left: 60, right: 60 },
+          duration: 300,
+        });
+      } else {
+        // No geometry at all — at least apply padding shift
+        map.current.easeTo({
+          padding: { top: 120, bottom: 331, left: 60, right: 60 },
+          duration: 300,
+        });
+      }
+    } else {
+      // Restore default bottom padding when card is dismissed
+      map.current.easeTo({
+        padding: { top: 120, bottom: 200, left: 60, right: 60 },
+        duration: 300,
+      });
+    }
+  }, [selectedBrowseCourse]);
+
   // Load existing course data for edit mode
   useEffect(() => {
     const eid = searchParams.get("edit");
@@ -1697,7 +1740,7 @@ export default function Map() {
       {selectedPlace && (
         <div style={{
           position: "absolute",
-          bottom: mode === "create" && isMobile ? (showSheet ? "calc(50vh + 16px)" : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))") : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))",
+          bottom: mode === "create" && isMobile ? (showSheet ? "calc(40dvh + 16px)" : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))") : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))",
           left: 16, right: !isMobile && mode === "create" ? 396 : 16, zIndex: 25,
           background: "#ffffff", borderRadius: 12, padding: "12px 14px",
           boxShadow: "var(--shadow-card)",
@@ -2007,7 +2050,7 @@ export default function Map() {
       {mode === "create" && <div
         style={{
           position: "absolute",
-          bottom: isMobile ? (showSheet ? "calc(50vh + 16px)" : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))") : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))",
+          bottom: isMobile ? (showSheet ? "calc(40dvh + 16px)" : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))") : "calc(var(--bottom-tab-h) + 12px + env(safe-area-inset-bottom, 0px))",
           right: !isMobile ? 396 : 12,
           display: "flex", flexDirection: "row", alignItems: "flex-end", gap: 12,
           zIndex: 20, transition: "bottom 0.3s, right 0.3s",
@@ -2111,7 +2154,7 @@ export default function Map() {
         <div style={isMobile ? {
           position: "fixed",
           bottom: 0, left: 0, right: 0,
-          height: "50vh",
+          height: "40dvh",
           overflowY: "auto",
           background: "#ffffff",
           borderRadius: "20px 20px 0 0",

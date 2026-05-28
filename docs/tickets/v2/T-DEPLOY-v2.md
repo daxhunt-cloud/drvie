@@ -3,7 +3,7 @@ id: T-DEPLOY-v2
 slug: routebook-design-direction-main
 version: v2
 title: "v2 Design System Overhaul — Production Deploy"
-status: in-progress
+status: done
 stage: phase4_deploy
 assignee: pdt-po
 type: deploy
@@ -12,12 +12,14 @@ risk_flags: [new-route-feed, ia-refactor-large, uncommitted-changes-pending]
 priority: P1
 routing: { model: sonnet, effort: medium }
 started_at: "2026-05-27T05:38:21Z"
+completed_at: "2026-05-27T07:19:51Z"
+duration_min: 102
 created_at: "2026-05-27T10:00:00Z"
 ---
 
 # T-DEPLOY-v2 · v2 Design System Overhaul — Production Deploy
 
-> status: in-progress · stage: phase4_deploy · assignee: pdt-po
+> status: done · stage: phase4_deploy · assignee: pdt-po
 > (mirrored — PO updates on lifecycle change)
 
 ## Context
@@ -120,7 +122,12 @@ COMMITMSG
 | 7 | 브랜드 색상 일관성 | 파란색 카테고리 배경 없음, 경유지 마커 brand red | ☐ |
 | 8 | iPhone 또는 Safari | BottomTab safe-area 잘림 없음, Pill CTA notch 침범 없음 | ☐ |
 
-> 1건이라도 실패 시 결과를 ## Persona Activity에 기록 + PO에게 알림.
+> 1건이라도 실패 시 결과를 
+## Outcome
+
+v2 production 배포 성공 (`https://routebook-app.vercel.app`, deploy ID `dpl_CgDoeq5YL2kBvKVyi3A2ZXw9cRAy`). force push로 placeholder 2 commit 덮어쓰고 v2 작업물 + doc-sync 2개 commit (`2706b81`, `ce1cc62`) 원격 main에 반영. git tag `v2-design-system` 부여. Post-deploy smoke에서 spec-vs-reality drift 발견 → Designer doc-sync로 4 파일 (design-ia-3tab.md, design-phase2-spec.md, retrospectives/v2.md, feature-history.md) 갱신 후 별도 commit. fail-pattern #8 documentation/spec-reality-drift 회고에 신규 등록.
+
+## Persona Activity에 기록 + PO에게 알림.
 
 ---
 
@@ -143,8 +150,18 @@ COMMITMSG
 
 ---
 
+
+## Outcome
+
+v2 production 배포 성공 (`https://routebook-app.vercel.app`, deploy ID `dpl_CgDoeq5YL2kBvKVyi3A2ZXw9cRAy`). force push로 placeholder 2 commit 덮어쓰고 v2 작업물 + doc-sync 2개 commit (`2706b81`, `ce1cc62`) 원격 main에 반영. git tag `v2-design-system` 부여. Post-deploy smoke에서 spec-vs-reality drift 발견 → Designer doc-sync로 4 파일 (design-ia-3tab.md, design-phase2-spec.md, retrospectives/v2.md, feature-history.md) 갱신 후 별도 commit. fail-pattern #8 documentation/spec-reality-drift 회고에 신규 등록.
+
 ## Persona Activity
 <!-- PO appends -->
 | timestamp | persona | model/effort | action | note |
 |---|---|---|---|---|
 | 2026-05-27T10:00Z | pdt-designer | sonnet/medium | spec | deploy ticket authored from v2 5a/5c synthesis |
+| 2026-05-27T07:19:51Z | pdt-developer | haiku/low | .gitignore housekeeping | added .DS_Store, tsconfig.tsbuildinfo, .productune/ |
+| 2026-05-27T07:19:51Z | pdt-po | mechanical | git add+commit+push 2706b81 | v2 work shipped to main (forced) |
+| 2026-05-27T07:19:51Z | pdt-po | mechanical | npx vercel --prod | READY at routebook-app.vercel.app |
+| 2026-05-27T07:19:51Z | pdt-designer | sonnet/medium | doc-reality sync | 4 docs synced post-deploy, 148/87 lines |
+| 2026-05-27T07:19:51Z | pdt-po | mechanical | commit ce1cc62 + push + tag v2-design-system | deploy ticket close |

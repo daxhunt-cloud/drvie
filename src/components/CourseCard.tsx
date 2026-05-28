@@ -114,7 +114,7 @@ export default function CourseCard({
   // ── Derived values ─────────────────────────────────────────────────────────
   const nickname = course.profiles?.nickname ?? "익명";
   const avatarUrl = course.profiles?.avatar_url ?? null;
-  const thumbnailHeight = variant === "feed" ? 180 : 160;
+  const thumbnailHeight = variant === "feed" ? 180 : variant === "popup" ? 110 : 160;
   const allTags = course.tags ?? [];
   const displayedTags = allTags.slice(0, 2);
   const overflowCount = allTags.length - 2;

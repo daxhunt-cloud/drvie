@@ -303,6 +303,12 @@ export default function CoursePlayer({ routeGeojson, waypoints, music, title, di
   const [controlsVisible, setControlsVisible] = useState(true);
   const hideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Hide GuestBanner during playback (body.player-playing → CSS-only)
+  useEffect(() => {
+    document.body.classList.toggle("player-playing", playing);
+    return () => { document.body.classList.remove("player-playing"); };
+  }, [playing]);
+
   // Fetch YouTube title via oEmbed
   useEffect(() => {
     if (!music) return;

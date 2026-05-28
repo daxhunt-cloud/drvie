@@ -172,6 +172,11 @@ body.create-mode-active .bottom-tab {
   display: none !important;
 }
 
+/* Hotfix V3#2 — hide GuestBanner during CoursePlayer playback */
+body.player-playing .guest-banner {
+  display: none !important;
+}
+
 /* Pin floating animation */
 @keyframes pinFloat {
   0%, 100% {

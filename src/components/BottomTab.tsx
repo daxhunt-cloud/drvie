@@ -43,7 +43,7 @@ const TABS = [
 export default function BottomTab() {
   const pathname = usePathname();
 
-  if (pathname.endsWith("/preview")) return null;
+  if (pathname.startsWith("/course/")) return null;
 
   const isActive = (path: string) => {
     if (pathname.startsWith("/course")) return false;
